@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class ProfessorController {
@@ -21,11 +22,23 @@ public class ProfessorController {
         return new ResponseEntity<Boolean>(true, HttpStatus.OK);
 
     }
-    @GetMapping("/professor/adc")
+    @GetMapping("/professor/ver/nome ")
+    public ResponseEntity<Boolean> vernome(@RequestParam String nome){
+        Optional<Professor> professor = pfRepository.findByNome(nome);
+
+        if (professor.isPresent()) {
+            return ResponseEntity.ok(true);  // Retorna 200 OK com 'true' se encontrado
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);  // Retorna 404 com 'false' se não encontrado
+        }
+    }
+
+
+    @GetMapping("/professor/ver")
     public List<Professor> ver(){
         return pfRepository.findAll();
     }
-    @PutMapping("/profesor/atualizar{id}")
+    @PutMapping("/profesor/atualizar/{id}")
     public ResponseEntity<Boolean> atualizar(@PathVariable Integer id, @RequestBody Professor p){
         if(!pfRepository.existsById(id)){
             return ResponseEntity.notFound().build();
@@ -35,7 +48,7 @@ public class ProfessorController {
         return new ResponseEntity<Boolean>(true , HttpStatus.OK);
     }
 
-    @DeleteMapping("/professor/delete{id}")
+    @DeleteMapping("/professor/delete/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable Integer id, @RequestBody Professor p){
         if(!pfRepository.existsById(id)){
             return ResponseEntity.notFound().build();
